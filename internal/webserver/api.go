@@ -1,38 +1,81 @@
 package webserver
 
 import (
-	"encoding/json"
-	"fmt"
+	"errors"
 	"net/http"
+	"strings"
+
+	"github.com/leetrout/terraform-sim/internal/webserver/api"
 )
 
-type TestResp struct {
-	Id   int
-	Name string
+// apiHandler handles routing API specific requests.
+func apiHandler(w http.ResponseWriter, r *http.Request) {
+	resource, err := splitAPIPath(strings.ToLower(r.URL.Path))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if resource == "entity" {
+		switch r.Method {
+		case http.MethodGet:
+			api.EntityDetail(w, r)
+			return
+		case http.MethodPost:
+			api.EntityCreate(w, r)
+			return
+		}
+	}
+
+	if resource == "entities" {
+		switch r.Method {
+		case http.MethodGet:
+			api.EntityList(w, r)
+			return
+		}
+	}
+
+	if resource == "group" {
+		switch r.Method {
+		case http.MethodGet:
+			api.GroupDetail(w, r)
+			return
+		case http.MethodPost:
+			api.GroupCreate(w, r)
+			return
+		}
+	}
+
+	if resource == "groups" {
+		switch r.Method {
+		case http.MethodGet:
+			api.GroupList(w, r)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusBadRequest)
 }
 
-// func (*TestResp) MarshalJSON() ([]byte, error) {
-// 	m := map[string]string{
-// 		"foo": "bar",
-// 	}
-// 	return json.Marshal(m)
-// }
+// splitAPIPath returns the resource on which we are operating.
+func splitAPIPath(urlPath string) (string, error) {
+	// Strip leading slash
+	urlPath = urlPath[1:]
 
-func apiHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	if r.Method == http.MethodPost {
-		w.Write([]byte(`{"Method": "Not supported"}`))
-		return
+	// Strip trailing slash if present
+	lastIdx := len(urlPath) - 1
+	if string(urlPath[lastIdx]) == "/" {
+		urlPath = urlPath[:lastIdx]
 	}
-	var t = &TestResp{Id: 1, Name: "foo"}
-	fmt.Printf("%+v\n", t)
-	jsonOut, err := json.Marshal(t)
-	if err != nil {
-		fmt.Println(err)
-		// TODO
-		return
+
+	// Split on any remaining slashes
+	pathParts := strings.Split(urlPath, "/")
+
+	if len(pathParts) < 2 {
+		return "", errors.New("invalid path")
 	}
-	fmt.Println("no errors")
-	fmt.Println(string(jsonOut))
-	w.Write(jsonOut)
+
+	// Expecting [api, <resource>, ...] at this point
+	// so return the resource name
+	return pathParts[1], nil
 }
