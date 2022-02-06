@@ -8,15 +8,15 @@ import "github.com/google/uuid"
 // drift and slightly more complex state management compared
 // to only using something like the random provider.
 type Entity struct {
-	ID                    uuid.UUID
-	Name                  string
-	TurboEncabulationRate int
-	RefractionRate        *int // Nullable
+	ID                    string `validate:"required,uuid"`
+	Name                  string `validate:"required"`
+	TurboEncabulationRate int    `validate:"required"`
+	RefractionRate        *int   // Nullable
 }
 
 func NewEntity() *Entity {
 	return &Entity{
-		ID:                    uuid.New(),
+		ID:                    uuid.NewString(),
 		Name:                  "",
 		TurboEncabulationRate: 0,
 		RefractionRate:        nil,
