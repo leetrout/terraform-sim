@@ -1,1 +1,11 @@
+// Create a group of entities
 POST http://localhost:9321/api/group
+
+{
+    "Name": "My Group",
+    "EntitySet":
+    [
+        "db8dfea6-0d54-4c6f-9b94-326ebadeb404",
+        "db8dfea6-0d54-4c6f-9b94-326ebadeb403"
+    ]
+}
