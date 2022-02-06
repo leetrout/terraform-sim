@@ -3,9 +3,7 @@ package webserver
 import (
 	"fmt"
 	"log"
-	"mime"
 	"net/http"
-	"strings"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -17,30 +15,13 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, string(html))
 }
 
-func staticHandler(w http.ResponseWriter, r *http.Request) {
-	// Fix me - find a better URL parser
-	var parts = strings.Split(r.URL.Path[1:], "/")
-	fmt.Println(len(parts))
-	if len(parts) < 2 {
-		// 404?
-		return
-	}
-	fmt.Println(parts)
-	var file = strings.Join(parts, "/")
-	data, _ := f.ReadFile(file)
-	var extParts = strings.Split(file, ".")
-	if len(extParts) > 0 {
-		var ext = extParts[len(extParts)-1]
-		ext = fmt.Sprintf(".%s", ext)
-		var ct = mime.TypeByExtension(ext)
-		w.Header().Set("Content-Type", ct)
-	}
-	fmt.Fprint(w, string(data))
-}
+// func staticHandler(w http.ResponseWriter, r *http.Request) {
+// 	fs := http.FileServer(http.FS(f))
+// }
 
 // RunServer runs a server at (TODO) address
 func RunServer() {
 	http.HandleFunc("/", handler)
-	http.HandleFunc("/static/", staticHandler)
+	http.Handle("/static/", http.FileServer(http.FS(f)))
 	log.Fatal(http.ListenAndServe(":9321", nil))
 }
