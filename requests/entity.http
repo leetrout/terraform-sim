@@ -8,12 +8,12 @@ GET http://localhost:9321/api/entities
 
 ###
 
-// Simple entity
+// Create simple entity
 POST http://localhost:9321/api/entity
 
 {
     "ID": "db8dfea6-0d54-4c6f-9b94-326ebadeb404",
-    "Name": "Example",
+    "Name": "Example Saved In State",
     "TurboEncabulationRate": 2
 }
 

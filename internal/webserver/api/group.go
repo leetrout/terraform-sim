@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/leetrout/terraform-sim/internal/resources"
+	"github.com/leetrout/terraform-sim/internal/store"
 	"github.com/leetrout/terraform-sim/internal/webserver/util"
 )
 
@@ -27,6 +28,7 @@ func GroupCreate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	store.AddGroup(&g)
 	w.WriteHeader(http.StatusCreated)
 	util.MarkRespJSON(w)
 	json.NewEncoder(w).Encode(g)
@@ -40,5 +42,5 @@ func GroupDetail(w http.ResponseWriter, r *http.Request) {
 
 func GroupList(w http.ResponseWriter, r *http.Request) {
 	util.MarkRespJSON(w)
-	fmt.Fprint(w, "TODO")
+	json.NewEncoder(w).Encode(store.Global.Groups)
 }

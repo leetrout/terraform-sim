@@ -6,17 +6,16 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/leetrout/terraform-sim/internal/resources"
+	"github.com/leetrout/terraform-sim/internal/store"
 	"github.com/leetrout/terraform-sim/internal/webserver/util"
 )
 
 // EntityList lists all entities.
 func EntityList(w http.ResponseWriter, r *http.Request) {
 	util.MarkRespJSON(w)
+
 	json.NewEncoder(w).Encode(
-		[]*resources.Entity{
-			resources.NewEntity(),
-			resources.NewEntity(),
-		},
+		store.Global.Entities,
 	)
 }
 
@@ -51,7 +50,8 @@ func EntityCreate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	jsonOut, _ := json.Marshal(e)
+
+	store.AddEntity(&e)
 	w.WriteHeader(http.StatusCreated)
-	w.Write(jsonOut)
+	json.NewEncoder(w).Encode(e)
 }
