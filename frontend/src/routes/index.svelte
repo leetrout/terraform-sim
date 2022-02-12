@@ -22,17 +22,17 @@
 	fetchData();
 </script>
 
-<h1>TF Sim</h1>
+<h1 class="text-3xl font-bold">TF Sim</h1>
 
-<h1>Entities</h1>
-<ul>
+<h2 class="text-2xl font-bold">Entities</h2>
+<ul class="pl-5 list-disc">
 	{#each entities as entity}
-		<li>{entity.Name}</li>
+		<li class="">{entity.Name}</li>
 	{/each}
 </ul>
 
-<h1>Groups</h1>
-<ul>
+<h2 class="text-2xl font-bold">Groups</h2>
+<ul class="pl-5 list-disc">
 	{#each groups as group}
 		<li>{group.Name}</li>
 	{/each}
