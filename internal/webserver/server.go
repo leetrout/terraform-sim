@@ -20,9 +20,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 // }
 
 // RunServer runs a server at (TODO) address
-func RunServer() {
+func RunServer(addr string) {
 	http.Handle("/static/", http.FileServer(http.FS(f)))
 	http.HandleFunc("/", handler)
 	http.HandleFunc("/api/", apiHandler)
-	log.Fatal(http.ListenAndServe(":9321", nil))
+	log.Fatal(http.ListenAndServe(addr, nil))
 }
