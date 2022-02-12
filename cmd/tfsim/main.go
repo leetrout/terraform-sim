@@ -8,7 +8,8 @@ import (
 )
 
 func main() {
-	fmt.Println("Starting up...")
+	addr := ":9321"
+	fmt.Printf("API server starting at %s\n", addr)
 	store.Initialize()
-	webserver.RunServer()
+	webserver.RunServer(addr)
 }

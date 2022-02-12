@@ -15,7 +15,7 @@ func EntityList(w http.ResponseWriter, r *http.Request) {
 	util.MarkRespJSON(w)
 
 	json.NewEncoder(w).Encode(
-		store.Global.Entities,
+		store.Global.EntityList(),
 	)
 }
 
@@ -23,7 +23,20 @@ func EntityList(w http.ResponseWriter, r *http.Request) {
 // of one entity.
 func EntityDetail(w http.ResponseWriter, r *http.Request) {
 	util.MarkRespJSON(w)
-	json.NewEncoder(w).Encode(resources.NewEntity())
+
+	uuidStrs := util.UUID_RX.FindStringSubmatch(r.URL.Path)
+	if uuidStrs == nil {
+		http.Error(w, "invalid UUID", http.StatusBadRequest)
+		return
+	}
+
+	uuid := uuidStrs[0]
+	e, ok := store.Global.Entities[uuid]
+	if !ok {
+		http.NotFound(w, r)
+	}
+
+	json.NewEncoder(w).Encode(e)
 }
 
 var validate *validator.Validate
@@ -32,11 +45,11 @@ var validate *validator.Validate
 func EntityCreate(w http.ResponseWriter, r *http.Request) {
 	util.MarkRespJSON(w)
 
-	var e resources.Entity
+	var ae resources.APICreateEntity
 
 	// Try to decode the request body into the struct. If there is an error,
 	// respond to the client with the error message and a 400 status code.
-	err := json.NewDecoder(r.Body).Decode(&e)
+	err := json.NewDecoder(r.Body).Decode(&ae)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -45,13 +58,14 @@ func EntityCreate(w http.ResponseWriter, r *http.Request) {
 	// e := resources.NewEntity()
 
 	validate = validator.New()
-	err = validate.Struct(e)
+	err = validate.Struct(ae)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	store.AddEntity(&e)
+	e := ae.AsEntity()
+	store.AddEntity(e)
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(e)
 }
