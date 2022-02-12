@@ -1,28 +1,25 @@
-<script context="module" lang="ts">
-	export async function load({ fetch }) {
-		// TODO where to store hostname config?
-		const baseURL = 'http://localhost:9321';
+<script lang="ts">
+	export var entities = [];
+	export var groups = [];
+	const baseURL = 'http://localhost:9321';
+
+	// TODO move to stores?
+	async function fetchData() {
 		const [entitiesReq, groupsReq] = await Promise.all([
 			fetch(`${baseURL}/api/entities`),
 			fetch(`${baseURL}/api/groups`)
 		]);
-		let entities = [];
-		let groups = [];
 		if (entitiesReq.ok) {
 			const entityJSONData = await entitiesReq.json();
 			entities = entityJSONData;
 		}
 		if (groupsReq.ok) {
-			const jsonData = await groupsReq.json();
-			groups = jsonData;
+			const groupJSONData = await groupsReq.json();
+			groups = groupJSONData;
 		}
-		return { props: { entities, groups } };
 	}
-</script>
 
-<script lang="ts">
-	export var entities;
-	export var groups;
+	fetchData();
 </script>
 
 <h1>TF Sim</h1>
