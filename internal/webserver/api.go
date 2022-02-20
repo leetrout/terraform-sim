@@ -24,6 +24,9 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 		case http.MethodPost:
 			api.EntityCreate(w, r)
 			return
+		case http.MethodDelete:
+			api.EntityDelete(w, r)
+			return
 		}
 	}
 
@@ -42,6 +45,9 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		case http.MethodPost:
 			api.GroupCreate(w, r)
+			return
+		case http.MethodDelete:
+			api.GroupDelete(w, r)
 			return
 		}
 	}

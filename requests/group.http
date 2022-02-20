@@ -14,3 +14,11 @@ POST http://localhost:9321/api/group
 
 // List groups
 GET http://localhost:9321/api/groups
+
+### Group detail
+
+GET http://localhost:9321/api/group/fe6303f7-7acd-4fd3-970f-b679251ea3f1
+
+### Group delete
+
+DELETE http://localhost:9321/api/group/fe6303f7-7acd-4fd3-970f-b679251ea3f1

@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
@@ -37,12 +36,50 @@ func GroupCreate(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// GroupDetail presents the details of one entity.
 func GroupDetail(w http.ResponseWriter, r *http.Request) {
 	util.MarkRespJSON(w)
-	fmt.Fprint(w, "TODO")
+
+	uuidStrs := util.UUID_RX.FindStringSubmatch(r.URL.Path)
+	if uuidStrs == nil {
+		http.Error(w, "invalid UUID", http.StatusBadRequest)
+		return
+	}
+
+	uuid := uuidStrs[0]
+	g, ok := store.Global.Groups[uuid]
+	if !ok {
+		http.NotFound(w, r)
+		return
+	}
+
+	json.NewEncoder(w).Encode(g)
 }
 
 func GroupList(w http.ResponseWriter, r *http.Request) {
 	util.MarkRespJSON(w)
 	json.NewEncoder(w).Encode(store.Global.GroupList())
+}
+
+// GroupDelete presents the details of one entity.
+func GroupDelete(w http.ResponseWriter, r *http.Request) {
+	util.MarkRespJSON(w)
+
+	uuidStrs := util.UUID_RX.FindStringSubmatch(r.URL.Path)
+	if uuidStrs == nil {
+		http.Error(w, "invalid UUID", http.StatusBadRequest)
+		return
+	}
+
+	uuid := uuidStrs[0]
+	_, ok := store.Global.Groups[uuid]
+	if !ok {
+		http.NotFound(w, r)
+		return
+	}
+
+	delete(store.Global.Groups, uuid)
+	json.NewEncoder(w).Encode(map[string]string{
+		"removed": uuid,
+	})
 }
