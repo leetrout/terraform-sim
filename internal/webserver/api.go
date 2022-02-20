@@ -46,6 +46,9 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 		case http.MethodPost:
 			api.GroupCreate(w, r)
 			return
+		case http.MethodDelete:
+			api.GroupDelete(w, r)
+			return
 		}
 	}
 
