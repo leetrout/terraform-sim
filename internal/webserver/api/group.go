@@ -109,9 +109,18 @@ func GroupUpdate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newName, ok := payload["name"]
+	newName, ok := payload["Name"]
 	if ok {
 		existingGroup.Name = newName.(string)
+	}
+
+	newEntitySet, ok := payload["EntitySet"]
+	if ok {
+		newEnts := []string{}
+		for _, inf := range newEntitySet.([]any) {
+			newEnts = append(newEnts, inf.(string))
+		}
+		existingGroup.EntitySet = newEnts
 	}
 
 	validate = validator.New()
