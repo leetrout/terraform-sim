@@ -66,3 +66,7 @@ POST http://localhost:9321/api/entity
     "TurboEncabulationRate": 1,
     "RefractionRate": 1.2
 }
+
+### Delete entity
+
+DELETE http://localhost:9321/api/entity/013dfe7c-2417-441c-a1f4-5bdd3f2ab132

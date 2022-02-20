@@ -34,6 +34,7 @@ func EntityDetail(w http.ResponseWriter, r *http.Request) {
 	e, ok := store.Global.Entities[uuid]
 	if !ok {
 		http.NotFound(w, r)
+		return
 	}
 
 	json.NewEncoder(w).Encode(e)
@@ -68,4 +69,27 @@ func EntityCreate(w http.ResponseWriter, r *http.Request) {
 	store.AddEntity(e)
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(e)
+}
+
+// EntityDelete deletes the given entity
+func EntityDelete(w http.ResponseWriter, r *http.Request) {
+	util.MarkRespJSON(w)
+
+	uuidStrs := util.UUID_RX.FindStringSubmatch(r.URL.Path)
+	if uuidStrs == nil {
+		http.Error(w, "invalid UUID", http.StatusBadRequest)
+		return
+	}
+
+	uuid := uuidStrs[0]
+	_, ok := store.Global.Entities[uuid]
+	if !ok {
+		http.NotFound(w, r)
+		return
+	}
+
+	delete(store.Global.Entities, uuid)
+	json.NewEncoder(w).Encode(map[string]string{
+		"removed": uuid,
+	})
 }
