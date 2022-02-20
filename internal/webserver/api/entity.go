@@ -19,8 +19,7 @@ func EntityList(w http.ResponseWriter, r *http.Request) {
 	)
 }
 
-// EntityDetail presents the details
-// of one entity.
+// EntityDetail presents the details of one entity.
 func EntityDetail(w http.ResponseWriter, r *http.Request) {
 	util.MarkRespJSON(w)
 
