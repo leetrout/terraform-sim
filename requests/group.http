@@ -17,8 +17,24 @@ GET http://localhost:9321/api/groups
 
 ### Group detail
 
-GET http://localhost:9321/api/group/fe6303f7-7acd-4fd3-970f-b679251ea3f1
+GET http://localhost:9321/api/group/09043642-f383-4970-8b42-47343d5cee7c
 
 ### Group delete
 
 DELETE http://localhost:9321/api/group/fe6303f7-7acd-4fd3-970f-b679251ea3f1
+
+### Group update name
+
+PATCH http://localhost:9321/api/group/09043642-f383-4970-8b42-47343d5cee7c
+
+{
+    "Name": "required name"
+}
+
+### Group update entity set
+
+PATCH http://localhost:9321/api/group/09043642-f383-4970-8b42-47343d5cee7c
+
+{
+    "EntitySet": []
+}

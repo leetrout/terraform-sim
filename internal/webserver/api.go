@@ -27,6 +27,9 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 		case http.MethodDelete:
 			api.EntityDelete(w, r)
 			return
+		case http.MethodPatch:
+			api.EntityUpdate(w, r)
+			return
 		}
 	}
 
@@ -49,7 +52,11 @@ func apiHandler(w http.ResponseWriter, r *http.Request) {
 		case http.MethodDelete:
 			api.GroupDelete(w, r)
 			return
+		case http.MethodPatch:
+			api.GroupUpdate(w, r)
+			return
 		}
+
 	}
 
 	if resource == "groups" {

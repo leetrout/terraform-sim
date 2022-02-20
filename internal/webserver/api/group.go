@@ -83,3 +83,57 @@ func GroupDelete(w http.ResponseWriter, r *http.Request) {
 		"removed": uuid,
 	})
 }
+
+// GroupUpdate handles updating the given group
+func GroupUpdate(w http.ResponseWriter, r *http.Request) {
+	payload := map[string]any{}
+
+	// Try to decode the request body into the struct. If there is an error,
+	// respond to the client with the error message and a 400 status code.
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	uuidStrs := util.UUID_RX.FindStringSubmatch(r.URL.Path)
+	if uuidStrs == nil {
+		http.Error(w, "invalid UUID", http.StatusBadRequest)
+		return
+	}
+
+	uuid := uuidStrs[0]
+	existingGroup, ok := store.Global.Groups[uuid]
+	if !ok {
+		http.NotFound(w, r)
+		return
+	}
+
+	newName, ok := payload["Name"]
+	if ok {
+		existingGroup.Name = newName.(string)
+	}
+
+	newEntitySet, ok := payload["EntitySet"]
+	if ok {
+		newEnts := []string{}
+		for _, inf := range newEntitySet.([]any) {
+			newEnts = append(newEnts, inf.(string))
+		}
+		existingGroup.EntitySet = newEnts
+	}
+
+	validate = validator.New()
+
+	err = validate.Struct(existingGroup)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	store.AddGroup(existingGroup)
+	w.WriteHeader(http.StatusCreated)
+	util.MarkRespJSON(w)
+	json.NewEncoder(w).Encode(existingGroup)
+
+}

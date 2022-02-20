@@ -70,3 +70,13 @@ POST http://localhost:9321/api/entity
 ### Delete entity
 
 DELETE http://localhost:9321/api/entity/013dfe7c-2417-441c-a1f4-5bdd3f2ab132
+
+
+### Update entity
+
+PATCH http://localhost:9321/api/entity/013dfe7c-2417-441c-a1f4-5bdd3f2ab132
+
+{
+    "Name": "Patched name 2",
+    "RefractionRate": 2
+}

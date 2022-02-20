@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"reflect"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/leetrout/terraform-sim/internal/resources"
@@ -91,4 +92,68 @@ func EntityDelete(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{
 		"removed": uuid,
 	})
+}
+
+// EntityUpdate handles updating the given entity
+func EntityUpdate(w http.ResponseWriter, r *http.Request) {
+	payload := map[string]any{}
+
+	// Try to decode the request body into the struct. If there is an error,
+	// respond to the client with the error message and a 400 status code.
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	uuidStrs := util.UUID_RX.FindStringSubmatch(r.URL.Path)
+	if uuidStrs == nil {
+		http.Error(w, "invalid UUID", http.StatusBadRequest)
+		return
+	}
+
+	uuid := uuidStrs[0]
+	existingEntity, ok := store.Global.Entities[uuid]
+	if !ok {
+		http.NotFound(w, r)
+		return
+	}
+
+	newName, ok := payload["Name"]
+	if ok {
+		existingEntity.Name = newName.(string)
+	}
+
+	newTER, ok := payload["TurboEncabulationRate"]
+	if ok && newTER != nil {
+		newTERF := newTER.(float64)
+		newTERI := int(newTERF)
+		existingEntity.TurboEncabulationRate = newTERI
+	}
+
+	refRate, ok := payload["RefractionRate"]
+	if ok {
+		var maybeRefRate *int
+		val := reflect.ValueOf(refRate)
+		if val.CanFloat() {
+			floatRefRate := refRate.(float64)
+			intRefRate := int(floatRefRate)
+			maybeRefRate = &intRefRate
+		}
+		existingEntity.RefractionRate = maybeRefRate
+	}
+
+	validate = validator.New()
+
+	err = validate.Struct(existingEntity)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	store.AddEntity(existingEntity)
+	w.WriteHeader(http.StatusCreated)
+	util.MarkRespJSON(w)
+	json.NewEncoder(w).Encode(existingEntity)
+
 }
