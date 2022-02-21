@@ -34,7 +34,7 @@
 
 	onMount(fetchData);
 	onMount(() => {
-		s = new WebSocket('ws://localhost:9321/ws');
+		s = new WebSocket(`ws://${window.location.host}/ws`);
 		console.log('WS connected', s);
 		wsConnected = true;
 		s.onmessage = (e: MessageEvent<WebSocketEventMap>) => {
