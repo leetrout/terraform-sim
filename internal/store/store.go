@@ -2,11 +2,18 @@ package store
 
 import (
 	"errors"
+	"fmt"
 	"os"
+	"sort"
 
 	"github.com/leetrout/terraform-sim/internal/resources"
+	"github.com/leetrout/terraform-sim/internal/ws"
 	"github.com/schollz/jsonstore"
 )
+
+func NotifyClients(msg string) {
+	ws.SOCKEX.Send(msg)
+}
 
 var Global = &State{
 	Entities: map[string]*resources.Entity{},
@@ -18,11 +25,25 @@ const StateFile = "./tfsim.json.gz"
 func AddEntity(e *resources.Entity) {
 	Global.Entities[e.ID] = e
 	Global.Save()
+	NotifyClients(fmt.Sprintf("ENTITY:ADDED:%s", e.ID))
+}
+
+func RemoveEntity(e *resources.Entity) {
+	delete(Global.Entities, e.ID)
+	Global.Save()
+	NotifyClients(fmt.Sprintf("ENTITY:REMOVED:%s", e.ID))
 }
 
 func AddGroup(g *resources.Group) {
 	Global.Groups[g.ID] = g
 	Global.Save()
+	NotifyClients(fmt.Sprintf("GROUP:ADDED:%s", g.ID))
+}
+
+func RemoveGroup(g *resources.Group) {
+	delete(Global.Groups, g.ID)
+	Global.Save()
+	NotifyClients(fmt.Sprintf("GROUP:REMOVED:%s", g.ID))
 }
 
 func Initialize() {
@@ -62,6 +83,11 @@ func (s *State) EntityList() []*resources.Entity {
 		entityList[idx] = entity
 		idx += 1
 	}
+
+	sort.SliceStable(entityList, func(i int, j int) bool {
+		return entityList[i].ID < entityList[j].ID
+	})
+
 	return entityList
 }
 
@@ -74,6 +100,11 @@ func (s *State) GroupList() []*resources.Group {
 		groupList[idx] = group
 		idx += 1
 	}
+
+	sort.SliceStable(groupList, func(i int, j int) bool {
+		return groupList[i].ID < groupList[j].ID
+	})
+
 	return groupList
 }
 

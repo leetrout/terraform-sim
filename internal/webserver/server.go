@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/leetrout/terraform-sim/internal/ws"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -21,8 +23,11 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 // RunServer runs a server at (TODO) address
 func RunServer(addr string) {
+	// Setup websocket exchange
+	ws.Init()
 	http.Handle("/static/", http.FileServer(http.FS(f)))
 	http.HandleFunc("/", handler)
 	http.HandleFunc("/api/", apiHandler)
+	http.HandleFunc("/ws", ws.SocketHandler)
 	log.Fatal(http.ListenAndServe(addr, nil))
 }

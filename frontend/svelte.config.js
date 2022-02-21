@@ -17,7 +17,14 @@ const config = {
 		// Uses _app by default but Go will not serve
 		// directories with leading underscores so
 		// change the appDir when we publish
-		appDir: 'internal'
+		appDir: 'internal',
+		vite: {
+			server: {
+				proxy: {
+					'/api': 'http://localhost:9321'
+				}
+			}
+		}
 	}
 };
 

@@ -72,13 +72,13 @@ func GroupDelete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	uuid := uuidStrs[0]
-	_, ok := store.Global.Groups[uuid]
+	g, ok := store.Global.Groups[uuid]
 	if !ok {
 		http.NotFound(w, r)
 		return
 	}
 
-	delete(store.Global.Groups, uuid)
+	store.RemoveGroup(g)
 	json.NewEncoder(w).Encode(map[string]string{
 		"removed": uuid,
 	})
