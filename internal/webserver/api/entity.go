@@ -82,13 +82,13 @@ func EntityDelete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	uuid := uuidStrs[0]
-	_, ok := store.Global.Entities[uuid]
+	e, ok := store.Global.Entities[uuid]
 	if !ok {
 		http.NotFound(w, r)
 		return
 	}
 
-	delete(store.Global.Entities, uuid)
+	store.RemoveEntity(e)
 	json.NewEncoder(w).Encode(map[string]string{
 		"removed": uuid,
 	})
@@ -155,5 +155,4 @@ func EntityUpdate(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	util.MarkRespJSON(w)
 	json.NewEncoder(w).Encode(existingEntity)
-
 }
