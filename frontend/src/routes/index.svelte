@@ -112,7 +112,7 @@
 
 	<div class="text-right ">
 		{#if wsConnected}
-			WS ⚡
+			<abbr title="WebSocket connected">WS ⚡</abbr>
 		{/if}
 	</div>
 </div>

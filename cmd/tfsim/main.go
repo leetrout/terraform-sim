@@ -6,27 +6,46 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/leetrout/terraform-sim/internal/store"
 	"github.com/leetrout/terraform-sim/internal/webserver"
 	"github.com/leetrout/terraform-sim/internal/ws"
+	"github.com/pkg/browser"
 )
 
-var addrFlag = flag.String("addr", ":9321", "address for webserver to listen")
+const defAddr = ":9321"
+
+var addrFlag = flag.String("addr", defAddr, "address for webserver to listen")
 var interactiveFlag = flag.Bool("i", false, "interactive mode (console)")
 
 func main() {
 	flag.Parse()
 
-	addr := ":9321"
+	addr := defAddr
 	if addrFlag != nil {
 		addr = *addrFlag
+	}
+
+	addrParts := strings.Split(addr, ":")
+	if len(addrParts) != 2 {
+		fmt.Fprint(os.Stderr, "addr in bad format, expected `<host>:<port>` or `:<port>`")
+		os.Exit(2)
+	}
+	if addrParts[0] == "" {
+		addrParts[0] = "localhost"
 	}
 
 	store.Initialize()
 	if *interactiveFlag == true {
 		go console()
 	}
+
+	timer := time.NewTimer(200 * time.Millisecond)
+	go func() {
+		<-timer.C
+		browser.OpenURL(fmt.Sprintf("http://%s:%s", addrParts[0], addrParts[1])) // FIXME
+	}()
 
 	fmt.Printf("+++ API server starting at %s\n", addr)
 	webserver.RunServer(addr)
