@@ -3,13 +3,21 @@
 	import type { EntityID } from '$lib/resources';
 	import Entity from '$lib/components/Entity.svelte';
 	import Group from '$lib/components/Group.svelte';
+	import EntityCreateForm from '$lib/components/EntityCreateForm.svelte';
 	import { browser } from '$app/env';
 
-	export var entities = [];
-	export var groups = [];
+	interface WebSocketEventMap {
+		close: CloseEvent;
+		error: Event;
+		message: MessageEvent;
+		open: Event;
+	}
+
+	export var entities: Entity[] = [];
+	export var groups: Group[] = [];
 	let s: WebSocket;
 	let wsConnected = false;
-	let baseURL;
+	let baseURL: string;
 
 	if (browser) {
 		baseURL = `${window.location.protocol}//${window.location.host}`;
@@ -34,11 +42,12 @@
 
 	onMount(fetchData);
 	onMount(() => {
-		s = new WebSocket(`ws://${window.location.host}/ws`);
+		// s = new WebSocket(`ws://${window.location.host}/ws`);
+		s = new WebSocket(`ws://localhost:9321/ws`);
 		console.log('WS connected', s);
 		wsConnected = true;
 		s.onmessage = (e: MessageEvent<WebSocketEventMap>) => {
-			console.log(e);
+			console.log('web socket received event', e);
 			console.log(e.data);
 			// TODO be smarter about what we fetch
 			fetchData();
@@ -96,6 +105,10 @@
 	{#each entities as entity}
 		<Entity {entity} remove={removeEntity} />
 	{/each}
+</div>
+
+<div>
+	<EntityCreateForm />
 </div>
 
 <div class="pb-10">

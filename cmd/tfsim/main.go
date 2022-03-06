@@ -11,7 +11,6 @@ import (
 	"github.com/leetrout/terraform-sim/internal/store"
 	"github.com/leetrout/terraform-sim/internal/webserver"
 	"github.com/leetrout/terraform-sim/internal/ws"
-	"github.com/pkg/browser"
 )
 
 const defAddr = ":9321"
@@ -44,7 +43,7 @@ func main() {
 	timer := time.NewTimer(200 * time.Millisecond)
 	go func() {
 		<-timer.C
-		browser.OpenURL(fmt.Sprintf("http://%s:%s", addrParts[0], addrParts[1])) // FIXME
+		// browser.OpenURL(fmt.Sprintf("http://%s:%s", addrParts[0], addrParts[1])) // FIXME
 	}()
 
 	fmt.Printf("+++ API server starting at %s\n", addr)

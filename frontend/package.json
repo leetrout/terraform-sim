@@ -33,6 +33,9 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@sveltejs/adapter-static": "^1.0.0-next.26"
+		"@felte/validator-yup": "^1.0.1",
+		"@sveltejs/adapter-static": "^1.0.0-next.26",
+		"felte": "^1.0.1",
+		"yup": "^0.32.11"
 	}
 }

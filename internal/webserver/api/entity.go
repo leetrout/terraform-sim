@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"reflect"
 
@@ -52,6 +53,7 @@ func EntityCreate(w http.ResponseWriter, r *http.Request) {
 	// respond to the client with the error message and a 400 status code.
 	err := json.NewDecoder(r.Body).Decode(&ae)
 	if err != nil {
+		fmt.Println("bad decode")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -61,6 +63,7 @@ func EntityCreate(w http.ResponseWriter, r *http.Request) {
 	validate = validator.New()
 	err = validate.Struct(ae)
 	if err != nil {
+		fmt.Println("bad validation")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}

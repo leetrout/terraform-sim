@@ -12,6 +12,7 @@ import (
 )
 
 func NotifyClients(msg string) {
+	fmt.Println("NotifyClients: ", msg)
 	ws.SOCKEX.Send(msg)
 }
 
